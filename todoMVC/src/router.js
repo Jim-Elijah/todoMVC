@@ -35,7 +35,7 @@ class router extends Component {
           <Link style={{ marginRight: '8px', textDecoration: 'none' }} to="/Login">Login</Link>
           <Link style={{ marginRight: '8px', textDecoration: 'none' }} to='/Todo'>Todo</Link>
           <Link style={{ marginRight: '8px', textDecoration: 'none' }} to="/Logout">Logout</Link>
-          <a style={{ marginRight: '8px', color: '#551aa8', cursor: "pointer" }}
+          <a style={{ marginRight: '8px', color: '#0000f0', cursor: "pointer" }}
             onClick={this.props.changeStorage}>{this.props.isLocalStorage ? '本地存储' : '远程存储'}</a>
           <span style={{ marginRight: '8px', textDecoration: 'none' }}>{this.props.isLogin ? '已登陆' : '未登录'}</span>
         </nav>
