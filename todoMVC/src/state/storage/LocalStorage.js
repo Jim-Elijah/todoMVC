@@ -1,6 +1,6 @@
 import React from 'react'
-import Input from './Input'
-import List from './List'
+import Input from '../components/Input'
+import List from '../components/List'
 
 class indexWithLocal extends React.Component {
   constructor(props) {

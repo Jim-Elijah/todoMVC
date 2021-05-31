@@ -25,6 +25,7 @@ class ListItem extends React.Component {
   enterHandler = (e) => {
     console.log('enter handler', e.target.value)
     const { item, updateListValue } = this.props
+    console.log(e.charCode)
     if (e.charCode === 13) {
       this.setState({
         isEditable: false
