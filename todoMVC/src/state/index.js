@@ -1,7 +1,7 @@
 import React from 'react'
 import Router from '../router'
 
-class Todo extends React.Component {
+class TodoState extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -9,10 +9,14 @@ class Todo extends React.Component {
       isLogin: false,
       user: {}
     }
+    console.log('index constructor')
   }
   render() {
+    console.log('state index render')
     return <div>
-      <Router isLogin={this.state.isLogin} isLocalStorage={this.state.isLocalStorage} user={this.state.user} changeLoginStatus={this.changeLoginStatus} changeStorage={this.changeStorage} addUser={this.addUser}>
+      {/* isLogin={this.state.isLogin} isLocalStorage={this.state.isLocalStorage} user={this.state.user}  */}
+      <Router {...this.state} changeLoginStatus={this.changeLoginStatus} changeStorage={this.changeStorage}
+        addUser={this.addUser}>
       </Router>
     </div>
   }
@@ -23,10 +27,15 @@ class Todo extends React.Component {
     })
   }
   changeStorage = () => {
+    alert('请勿频繁切换存储方式！')
     console.log('change storage', !this.state.isLocalStorage)
+    console.log(this)
+    let cache = JSON.parse(sessionStorage.getItem('cache'))
+    cache.isLocalStorage = !this.state.isLocalStorage
     this.setState({
       isLocalStorage: !this.state.isLocalStorage
     })
+    
   }
   changeLoginStatus = (status) => {
     console.log('set status', status)
@@ -34,6 +43,15 @@ class Todo extends React.Component {
       isLogin: status
     })
   }
+  componentWillMount() {
+    console.log('index willMount')
+    let cache = sessionStorage.getItem('cache')
+    cache = cache !== null ? JSON.parse(cache) : {}
+    console.log('cache', cache)
+    this.setState({
+      ...cache
+    })
+  }
 }
 
-export default Todo
+export default TodoState

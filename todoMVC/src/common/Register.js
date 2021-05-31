@@ -11,6 +11,11 @@ class login extends React.Component{
     }
   }
   render() {
+    if (this.props.isLogin) {
+      return <div>
+        <h2>您已经登录，请先退出登录！</h2>
+      </div>
+    }
     return <div>
         <label htmlFor='username'>用户名:</label>
           <input type="text" value={this.state.username} onInput={this.usernameHandler} id='username'/><br />

@@ -11,6 +11,11 @@ class login extends React.Component {
     }
   }
   render() {
+    if (this.props.isLogin) {
+      return <div>
+        <h2>您已经登录！</h2>
+      </div>
+    }
     return <div>
       <label htmlFor='username'>用户名:</label>
       <input type="text" value={this.state.username} onChange={this.usernameHandler} id='username' /><br />
@@ -79,6 +84,14 @@ class login extends React.Component {
           console.log('user', user)
           that.props.changeLoginStatus(true)
           that.props.addUser(user)
+          // 登陆后缓存user, isLogin和isLocalStorage
+          console.log('set session storage')
+          let cache = {
+            user,
+            isLogin: true,
+            isLocalStorage: that.props.isLocalStorage
+          }
+          sessionStorage.setItem('cache', JSON.stringify(cache));
           alert(data.msg + '请查看Todo')
           // setTimeout(() => {
           //   that.routeJump('/todo');
