@@ -109,6 +109,9 @@ class login extends React.Component {
     console.log('enter login didMount', this.props)
     console.log('isLogin', this.props.isLogin)
   }
+  componentWillUnmount() {
+    console.log('login unmount');
+  }
 }
 
 export default login

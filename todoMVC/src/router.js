@@ -53,12 +53,15 @@ class router extends Component {
     console.log('router didUpdate', this.props)
   }
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('enter scu')
+    console.log('enter router scu')
     if (nextProps.isLogin !== this.props.isLogin || nextProps.isLocalStorage !== this.props.isLocalStorage) {
       console.log('update')
       return true // 可以渲染
     }
     return false // 不重复渲染
+  }
+  componentWillUnmount() {
+    console.log('router unmount');
   }
 }
 

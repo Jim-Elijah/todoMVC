@@ -6,6 +6,8 @@ import axios from 'axios'
 class State extends React.Component {
   constructor(props) {
     super(props)
+    console.log('DBStorage constructor')
+    console.log('isLogin', this.props.isLogin)
     this.state = {
       completedChanged: false,
       titleUpdated: false,
@@ -25,7 +27,7 @@ class State extends React.Component {
   }
 
   render() {
-    console.log('todo render', this.props)
+    console.log('DBStorage render', this.props)
     if (!this.props.isLogin) {
       return <div>
         <h2>请先登录！</h2>
@@ -214,7 +216,7 @@ class State extends React.Component {
     if (this.state.isLocalStorage) {
       console.log('get data from local')
       var data = localStorage.getItem("todo");
-      data = data !== null ? JSON.parse(data) : []
+      data = data ? JSON.parse(data) : []
       that.setState({
         list: data
       }, () => { // 异步更新，回调中拿值
@@ -249,13 +251,15 @@ class State extends React.Component {
       localStorage.setItem("todo", JSON.stringify(data));
     }
     else {
-      console.log('save data to server, done')
+      // 页面unmout后再写回数据可，批处理
+      // todo
+      console.log('save data to server, to be done')
     }
   }
 
   componentDidMount() {
     // 登陆后在Todo页面刷新，页面清空，但是this.props.isLogin是false
-    console.log('enter todo didMount', this.props)
+    console.log('enter DBStorage didMount', this.props)
     console.log('isLogin', this.props.isLogin)
     if (this.props.isLogin) {
       this.setState({
@@ -269,8 +273,30 @@ class State extends React.Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    // 切换存储后，页面不刷新
+    console.log('enter DBStorage scu')
+    if (this.props.isLocalStorage !== nextProps.isLocalStorage) {
+      console.log('update')
+      return true // 可以渲染
+    }
+    if (this.state.list.length !== nextState.list.length) {
+      console.log('update')
+      return true
+    }
+    if (this.state.completedChanged !== nextState.completedChanged) {
+      console.log('update')
+      return true
+    }
+    if (this.state.titleUpdated !== nextState.titleUpdated) {
+      console.log('update')
+      return true
+    }
+    return false // 不重复渲染
+  }
+
   componentDidUpdate(preProps, preState) {
-    console.log('enter todo didUpdate')
+    console.log('enter DBStorage didUpdate')
     if (this.state.list.length !== preState.list.length) {
       console.log('list length changed')
       this.saveData(this.state.list)

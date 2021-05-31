@@ -9,7 +9,7 @@ class TodoState extends React.Component {
       isLogin: false,
       user: {}
     }
-    console.log('index constructor')
+    console.log('state index constructor')
   }
   render() {
     console.log('state index render')
@@ -31,11 +31,22 @@ class TodoState extends React.Component {
     console.log('change storage', !this.state.isLocalStorage)
     console.log(this)
     let cache = JSON.parse(sessionStorage.getItem('cache'))
-    cache.isLocalStorage = !this.state.isLocalStorage
+    if (cache) {
+      cache.isLocalStorage = !this.state.isLocalStorage
+      sessionStorage.setItem('cache', JSON.stringify(cache))
+    }
+    else {
+      let cache = {
+        user: this.state.user,
+        isLogin: this.state.isLogin,
+        isLocalStorage: !this.state.isLocalStorage
+      }
+      sessionStorage.setItem('cache', JSON.stringify(cache));
+    }
     this.setState({
       isLocalStorage: !this.state.isLocalStorage
     })
-    
+
   }
   changeLoginStatus = (status) => {
     console.log('set status', status)
@@ -44,13 +55,22 @@ class TodoState extends React.Component {
     })
   }
   componentWillMount() {
-    console.log('index willMount')
+    console.log('state index willMount')
     let cache = sessionStorage.getItem('cache')
     cache = cache !== null ? JSON.parse(cache) : {}
     console.log('cache', cache)
     this.setState({
       ...cache
     })
+  }
+  componentDidMount() {
+    console.log('state index did mount');
+  }
+  componentDidUpdate() {
+    console.log('state index didUpdate', this.state)
+  }
+  componentWillUnmount() {
+    console.log('state index unmount');
   }
 }
 
