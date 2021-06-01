@@ -1,11 +1,13 @@
 import React from 'react'
-import Input from './Input'
-import List from './List'
+import Input from '../components/Input'
+import List from '../components/List'
 import axios from 'axios'
 
 class State extends React.Component {
   constructor(props) {
     super(props)
+    console.log('DBStorage constructor')
+    console.log('isLogin', this.props.isLogin)
     this.state = {
       completedChanged: false,
       titleUpdated: false,
@@ -23,8 +25,9 @@ class State extends React.Component {
       ]
     }
   }
-  
+
   render() {
+    console.log('DBStorage render', this.props)
     if (!this.props.isLogin) {
       return <div>
         <h2>请先登录！</h2>
@@ -36,7 +39,6 @@ class State extends React.Component {
         deleteItem={this.deleteItem}
         toggleCompleted={this.toggleCompleted}
         updateListValue={this.updateListValue}
-        isLogin={this.props.isLogin}
       />
     </div>
   }
@@ -80,6 +82,8 @@ class State extends React.Component {
 
   // 删除一项
   deleteItem = (id) => {
+    console.log('delete', id)
+    console.log(this, this.state.isLocalStorage)
     if (this.state.isLocalStorage) {
       console.log('delete from local', id)
       this.setState({
@@ -212,7 +216,7 @@ class State extends React.Component {
     if (this.state.isLocalStorage) {
       console.log('get data from local')
       var data = localStorage.getItem("todo");
-      data = data !== null ? JSON.parse(data) : []
+      data = data ? JSON.parse(data) : []
       that.setState({
         list: data
       }, () => { // 异步更新，回调中拿值
@@ -247,32 +251,52 @@ class State extends React.Component {
       localStorage.setItem("todo", JSON.stringify(data));
     }
     else {
-      console.log('save data to server, done')
+      // 页面unmout后再写回数据可，批处理
+      // todo
+      console.log('save data to server, to be done')
     }
   }
 
   componentDidMount() {
-    console.log('enter todo didMount', this.props)
+    // 登陆后在Todo页面刷新，页面清空，但是this.props.isLogin是false
+    console.log('enter DBStorage didMount', this.props)
     console.log('isLogin', this.props.isLogin)
     if (this.props.isLogin) {
-      // // // this.props.location.search 是 ?uid=60649e73d11dac31585b67ff&name=jack
-      // let arr = this.props.location.search.split('&') // ['?uid=60649e73d11dac31585b67ff', 'name=jack']
-      // let uid = arr[0].substr(5)
-      // let name = arr[1].substr(5)
-      // console.log(uid, name)
       this.setState({
         user: this.props.user,
         isLocalStorage: this.props.isLocalStorage
       }, () => { // 异步更新，回调中拿值
-        console.log('user', this.state.user, this.state.isLocalStorage)
+        console.log('user', this.state.user, 'isLocalStorage', this.state.isLocalStorage)
         // this.getData()必须在回调中拿到最新的this.state.user，然后根据uid查询todoItem来渲染
         this.getData();
       })
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    // 切换存储后，页面不刷新
+    console.log('enter DBStorage scu')
+    if (this.props.isLocalStorage !== nextProps.isLocalStorage) {
+      console.log('update')
+      return true // 可以渲染
+    }
+    if (this.state.list.length !== nextState.list.length) {
+      console.log('update')
+      return true
+    }
+    if (this.state.completedChanged !== nextState.completedChanged) {
+      console.log('update')
+      return true
+    }
+    if (this.state.titleUpdated !== nextState.titleUpdated) {
+      console.log('update')
+      return true
+    }
+    return false // 不重复渲染
+  }
+
   componentDidUpdate(preProps, preState) {
-    console.log('enter todo didUpdate')
+    console.log('enter DBStorage didUpdate')
     if (this.state.list.length !== preState.list.length) {
       console.log('list length changed')
       this.saveData(this.state.list)

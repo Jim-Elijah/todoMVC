@@ -1,12 +1,7 @@
 import React from 'react'
 import ListItem from './ListItem'
 
-function List({ list = [], deleteItem, toggleCompleted, updateListValue, isLogin }) {
-  // if (!isLogin) {
-  //   return <div>
-  //     <h2>请先登录！</h2>
-  //   </div>
-  // }
+function List({ list = [], deleteItem, toggleCompleted, updateListValue }) {
   return <div>
     {list.map(item => <ListItem
       item={item}
@@ -15,7 +10,7 @@ function List({ list = [], deleteItem, toggleCompleted, updateListValue, isLogin
       toggleCompleted={toggleCompleted}
       updateListValue={updateListValue}
     />)}
-    </div>
+  </div>
 }
 
 export default List

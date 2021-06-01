@@ -7,7 +7,6 @@ const crypto = require('crypto');
 const server = http.createServer((req, res) => {
   const { method, body } = req
   console.log(req.url, method)
-  console.log(method === 'PUT')
   res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
   if (method.toUpperCase() == 'POST') {
     console.log('enter post')
@@ -195,7 +194,7 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify(
             {
               msg: '没有待办事项！',
-              code: 1,
+              code: 0,
               data: []
             }
           ))
