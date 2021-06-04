@@ -1,11 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { addTodo } from '../actions'
+import { addTodo, clearTodo } from '../actions'
 
 // 函数组件，接收 props 参数
 let AddTodo = ({ dispatch }) => {
   // dispatch 即 props.dispatch
-
   let input
 
   return (
@@ -16,7 +15,6 @@ let AddTodo = ({ dispatch }) => {
           if (!input.value.trim()) {
             return
           }
-          // 创建一个 todo
           dispatch(addTodo(input.value))
           input.value = ''
         }}
@@ -29,6 +27,7 @@ let AddTodo = ({ dispatch }) => {
         <button type="submit">
           Add Todo
         </button>
+        <button style={{ marginLeft: '10px' }} onClick={() => dispatch(clearTodo())}>清空缓存</button>
       </form>
     </div>
   )

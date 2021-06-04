@@ -212,7 +212,7 @@ class State extends React.Component {
   // 读取数据 
   getData = () => {
     let that = this
-    // console.log(that)
+    console.log('getdate', this.state.isLocalStorage)
     if (this.state.isLocalStorage) {
       console.log('get data from local')
       var data = localStorage.getItem("todo");
@@ -256,7 +256,6 @@ class State extends React.Component {
       console.log('save data to server, to be done')
     }
   }
-
   componentDidMount() {
     // 登陆后在Todo页面刷新，页面清空，但是this.props.isLogin是false
     console.log('enter DBStorage didMount', this.props)
@@ -272,24 +271,41 @@ class State extends React.Component {
       })
     }
   }
+  // static getDerivedStateFromProps (nextProps, prevState) {
+  //   // 登陆后在Todo页面刷新，页面清空，但是this.props.isLogin是false
+  //   console.log('enter DBStorage getDerivedStateFromProps', nextProps)
+  //   console.log('this', this)
+  //   console.log('isLogin', nextProps.isLogin)
+  //   // if (this.props.isLogin) {
+  //     this.setState({
+  //       user: nextProps.user,
+  //       isLocalStorage: nextProps.isLocalStorage
+  //     }, () => { // 异步更新，回调中拿值
+  //       console.log('user', this.state.user, 'isLocalStorage', this.state.isLocalStorage)
+  //       // this.getData()必须在回调中拿到最新的this.state.user，然后根据uid查询todoItem来渲染
+  //       this.getData();
+  //     })
+  //   // }
+  // }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // 切换存储后，页面不刷新
+    // 切换存储后，页面不刷新，还是旧数据？
     console.log('enter DBStorage scu')
     if (this.props.isLocalStorage !== nextProps.isLocalStorage) {
-      console.log('update')
+      console.log('update isLocalStorage')
+      this.getData();
       return true // 可以渲染
     }
     if (this.state.list.length !== nextState.list.length) {
-      console.log('update')
+      console.log('update list.length')
       return true
     }
     if (this.state.completedChanged !== nextState.completedChanged) {
-      console.log('update')
+      console.log('update completedChanged')
       return true
     }
     if (this.state.titleUpdated !== nextState.titleUpdated) {
-      console.log('update')
+      console.log('update titleUpdated')
       return true
     }
     return false // 不重复渲染

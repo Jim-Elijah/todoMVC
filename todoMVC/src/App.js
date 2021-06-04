@@ -1,15 +1,15 @@
 import React from 'react'
-import State from './state/index'
+// import State from './state/index'
 // import Hook from './hook/index'
-// import Redux from './redux/index'
+import ReduxTodo from './redux/index'
 
 
 function App() {
   return (
     <div>
-      <State />
+      {/* <State /> */}
       {/* <Hook /> */}
-      {/* <Redux /> */}
+      <ReduxTodo />
     </div>  
   );
 }

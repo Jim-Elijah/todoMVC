@@ -1,26 +1,52 @@
-let nextTodoId = 0
+// let nextTodoId = 0
 
-// 创建一个 todo
 export const addTodo = text => {
   return {
     type: 'ADD_TODO',
-    id: nextTodoId++,
+    id: parseInt(Math.random().toString().slice(-5)),
     text
   }
 }
-
-// // 设置完成状态
-// export const setVisibilityFilter = filter => {
-//   return {
-//     type: 'SET_VISIBILITY_FILTER',
-//     filter
-//   }
-// }
-
-// 切换 todo 完成状态
+export const deleteTodo = id => {
+  return {
+    type: 'DELETE_TODO',
+    id
+  }
+}
+export const ModifyTodo = (id, text) => {
+  return {
+    type: 'MODIFY_TODO',
+    id, 
+    text
+  }
+}
 export const toggleTodo = id => {
   return {
     type: 'TOGGLE_TODO',
     id
+  }
+}
+export const clearTodo = () => {
+  return {
+    type: 'CLEAR_TODO'
+  }
+}
+export const toggleIsLogin = (isLogin) => {
+  return {
+    type: 'TOGGLE_ISLOGIN',
+    isLogin
+  }
+}
+export const toggleIsLocalStorage= (isLocalStorage) => {
+  return {
+    type: 'TOGGLE_ISLOCALSTORAGE',
+    isLocalStorage
+  }
+}
+// // 设置完成状态
+export const setVisibilityFilter = filter => {
+  return {
+    type: 'SET_VISIBILITY_FILTER',
+    filter
   }
 }
