@@ -13,7 +13,7 @@ class ListItem extends React.Component {
       onDoubleClick={this.dbClickHandler}>
       {item.title}
     </span>
-    let inputEle = <input defaultValue={item.title} onBlur={this.blurHandler} onKeyPress={this.enterHandler} />
+    let inputEle = <input ref={input => this.inputRef = input} defaultValue={item.title} onBlur={this.blurHandler} onKeyPress={this.enterHandler} />
 
     return <div style={{ marginTop: '10px' }}>
       <input type="checkbox" style={{ margin: '5px' }} checked={item.completed}
@@ -36,6 +36,9 @@ class ListItem extends React.Component {
   dbClickHandler = () => {
     this.setState({
       isEditable: true
+    }, () => {
+      // 双击后选中所有文本，注意要放在回调中，setState异步更新
+      this.inputRef.select()
     })
   }
   blurHandler = (e) => {
