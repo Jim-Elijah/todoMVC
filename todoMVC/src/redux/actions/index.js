@@ -1,52 +1,51 @@
 // let nextTodoId = 0
 
-export const addTodo = text => {
+export const addTodo = (payload) => {
   return {
-    type: 'ADD_TODO',
-    id: parseInt(Math.random().toString().slice(-5)),
-    text
-  }
-}
-export const deleteTodo = id => {
+    type: "ADD_TODO",
+    ...payload,
+  };
+};
+export const deleteTodo = (id) => {
   return {
-    type: 'DELETE_TODO',
-    id
-  }
-}
+    type: "DELETE_TODO",
+    id,
+  };
+};
 export const ModifyTodo = (id, text) => {
   return {
-    type: 'MODIFY_TODO',
-    id, 
-    text
-  }
-}
-export const toggleTodo = id => {
+    type: "MODIFY_TODO",
+    id,
+    text,
+  };
+};
+export const toggleTodo = (id) => {
   return {
-    type: 'TOGGLE_TODO',
-    id
-  }
-}
+    type: "TOGGLE_TODO",
+    id,
+  };
+};
 export const clearTodo = () => {
   return {
-    type: 'CLEAR_TODO'
-  }
-}
+    type: "CLEAR_TODO",
+  };
+};
 export const toggleIsLogin = (isLogin) => {
   return {
-    type: 'TOGGLE_ISLOGIN',
-    isLogin
-  }
-}
-export const toggleIsLocalStorage= (isLocalStorage) => {
+    type: "TOGGLE_ISLOGIN",
+    isLogin,
+  };
+};
+export const toggleIsLocalStorage = (isLocalStorage) => {
   return {
-    type: 'TOGGLE_ISLOCALSTORAGE',
-    isLocalStorage
-  }
-}
+    type: "TOGGLE_ISLOCALSTORAGE",
+    isLocalStorage,
+  };
+};
 // // 设置完成状态
-export const setVisibilityFilter = filter => {
+export const setVisibilityFilter = (filter) => {
   return {
-    type: 'SET_VISIBILITY_FILTER',
-    filter
-  }
-}
+    type: "SET_VISIBILITY_FILTER",
+    filter,
+  };
+};

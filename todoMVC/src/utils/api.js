@@ -10,7 +10,7 @@ export default {
   logout(param) {
     return request("/api/logout", param, "POST");
   },
-  userInfo(id) {
+  getUserInfo(id) {
     return request(`/api/user/${id}`, null, "GET");
   },
 
