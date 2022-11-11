@@ -1,17 +1,10 @@
-import React from 'react'
-import State from './state/index'
-// import Hook from './hook/index'
-// import ReduxTodo from './redux/index'
+import React, { Component } from 'react'
+import Layout from './common/Layout'
 
-
-function App() {
-  return (
-    <div>
-      <State />
-      {/* <Hook /> */}
-      {/* <ReduxTodo /> */}
-    </div>  
-  );
+export default class App extends Component {
+  render() {
+    return (
+      <Layout></Layout>
+    )
+  }
 }
-
-export default App;
