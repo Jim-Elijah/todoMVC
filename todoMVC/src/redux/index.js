@@ -1,15 +1,15 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import todoApp from './reducers'
-import App from './components/App'
+import reducer from './reducers'
+import TodoApp from './components'
 
 let store
 
-export default class Todo extends React.Component {
+export default class TodoList extends React.Component {
   constructor(props) {
     super(props)
-    store = createStore(todoApp, this.getState())
+    store = createStore(reducer, this.getState())
   }
   // 读取本地存储的数据 
   getState = () => {
@@ -18,6 +18,7 @@ export default class Todo extends React.Component {
   }
   // 保存本地存储数据
   saveState = (data) => {
+    console.log('save', data)
     localStorage.setItem("todo", JSON.stringify(data));
   }
   componentDidMount() {
@@ -27,7 +28,7 @@ export default class Todo extends React.Component {
   }
   render() {
     return <Provider store={store}>
-      <App />
+      <TodoApp />
     </Provider>
   }
 }

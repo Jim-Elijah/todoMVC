@@ -1,28 +1,41 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from "react";
+import PropTypes from "prop-types";
 
 const Link = ({ active, children, onClick }) => {
   if (active) {
-    return <span>{children}</span>
+    return (
+      <span
+        style={{
+          color: "blue",
+          fontWeight: "500",
+          fontStyle: "italic",
+          textDecoration: "underline",
+          cursor: "pointer",
+          marginRight: "4px",
+        }}
+      >
+        {children}
+      </span>
+    );
   }
 
   return (
-    <a
-      href=""
-      onClick={e => {
-        e.preventDefault()
-        onClick()
+    <span
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
       }}
+      style={{ cursor: "pointer", marginRight: "4px" }}
     >
       {children}
-    </a>
-  )
-}
+    </span>
+  );
+};
 
 Link.propTypes = {
   active: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
-  onClick: PropTypes.func.isRequired
-}
+  onClick: PropTypes.func.isRequired,
+};
 
-export default Link
+export default Link;
