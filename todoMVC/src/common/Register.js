@@ -1,58 +1,90 @@
 import React from 'react'
-import axios from 'axios'
+import { Form, Input, Button, message } from 'antd'
+import Api from '../utils/api'
+import WithModalHOC from './WithModalHOC'
 import { usernameReg, pswdReg } from './reg'
-class login extends React.Component {
+class register extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       username: '',
       pswd: '',
-      pswdAgain: ''
+      pswdAgain: '',
+      modalConfig: {
+        title: <div style={{ textAlign: 'center' }}>请注册</div>,
+        closable: false,
+        footer: null,
+        // maskClosable: true,
+      },
     }
   }
   render() {
-    if (this.props.isLogin) {
-      return <div>
-        <h2>您已经登录，请先退出登录！</h2>
-      </div>
-    }
-    return <div>
-      <label htmlFor='username'>用户名:</label>
-      <input type="text" value={this.state.username} onInput={this.usernameHandler} id='username' /><br />
-      <label htmlFor='password'>密{" "}码: </label>
-      <input type="password" value={this.state.pswd} onChange={this.pswdHandler} id='password' /> <br />
-      <label htmlFor='passwordAgain'>确认密码: </label>
-      <input type="password" value={this.state.pswdAgain} onChange={this.pswdAgainHandler} id='passwordAgain' /> <br />
-      <button onClick={this.submitHandler}>注册</button>
-    </div>
+    const { username, pswd, pswdAgain } = this.state
+    return (
+      <Form
+        name="register"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        initialValues={{ remember: true }}
+        onFinish={this.submitHandler}
+        autoComplete="off"
+        style={{ width: '400px' }}
+      >
+        <Form.Item
+          label="用户名"
+          name="username"
+          rules={[{ required: true, message: '请输入用户名!' }]}
+        >
+          <Input value={username} placeholder='请输入用户名' maxLength={20} onChange={this.changeHandler('username')} />
+        </Form.Item>
+
+        <Form.Item
+          label="密码"
+          name="pswd"
+          rules={[{ required: true, message: '请输入密码!' }]}
+        >
+          <Input.Password value={pswd} placeholder='请输入密码' maxLength={20} onChange={this.changeHandler('pswd')} />
+        </Form.Item>
+
+        <Form.Item
+          label="确认密码"
+          name="passwordAgain"
+          rules={[{ required: true, message: '请再次输入密码!' }]}
+        >
+          <Input.Password value={pswdAgain} placeholder='请再次输入密码' maxLength={20}
+            onChange={this.changeHandler('pswdAgain')} />
+        </Form.Item>
+
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" htmlType="submit">
+            注册
+          </Button>
+          <span style={{ fontSize: '12px', color: 'blue', marginLeft: '10px', cursor: 'pointer' }} onClick={this.jump2Login}>已有账号?点此登录</span>
+        </Form.Item>
+      </Form>
+    )
   }
-  usernameHandler = (e) => {
+  changeHandler = (field) => (e) => {
     this.setState({
-      username: e.target.value
-    })
+      [field]: e.target.value,
+    });
   }
-  pswdHandler = (e) => {
-    this.setState({
-      pswd: e.target.value
-    })
-  }
-  pswdAgainHandler = (e) => {
-    this.setState({
-      pswdAgain: e.target.value
-    })
+  jump2Login = () => {
+    this.props.history.push('/login')
   }
   isValid = () => {
-    let username = this.state.username, pswd = this.state.pswd, pswdAgain = this.state.pswdAgain;
+    const { username, pswd, pswdAgain } = this.state
+    console.log('valid', username, pswd, pswdAgain)
     if (!usernameReg.test(username)) {
-      alert('请输入合法的用户名!')
+      message.warning('请输入合法的用户名!')
       return false;
     }
     if (!pswdReg.test(pswd) || !pswdReg.test(pswdAgain)) {
-      alert('请输入合法的密码!')
+      message.warning('请输入合法的密码!')
       return false;
     }
     if (pswd !== pswdAgain) {
-      alert('请输入相同的密码!')
+      message.warning('请输入相同的密码!')
       return false;
     }
     return true
@@ -62,33 +94,29 @@ class login extends React.Component {
     if (!this.isValid()) {
       return;
     }
-    let that = this
-    axios({
-      method: 'post',
-      url: 'register',
-      data: {
-        username: this.state.username,
-        password: this.state.pswd
-      }
-    })
-      .then(function (response) {
-        console.log(response);
-        if (response.data.code === 1) {
-          alert(response.data.msg + ' 请登录！')
-          that.setState({
+    const { username, pswd } = this.state
+    Api.register({ username, password: pswd })
+      .then(res => {
+        console.log('register res', res)
+        if (res.code === 1) {
+          message.success('注册成功, 即刻登陆吧!')
+          setTimeout(() => {
+            this.props.history.push('/login')
+          }, 300);
+          this.setState({
             username: '',
             pswd: '',
             pswdAgain: ''
           })
+        } else {
+          message.warning(res.msg);
         }
+      }).catch(err => {
+        console.error(err)
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-  componentWillUnmount() {
-    console.log('register unmount');
   }
 }
 
-export default login
+const withRegister = WithModalHOC(register);
+
+export default withRegister

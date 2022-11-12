@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Checkbox, Input } from "antd";
+import Api from '../../utils/api'
 import PropTypes from "prop-types";
 
 class TodoItem extends React.Component {
@@ -10,7 +11,7 @@ class TodoItem extends React.Component {
     };
   }
   render() {
-    const { completed, text, onDeleteTodo, onToggleTodo } = this.props;
+    const { completed, text } = this.props;
     let spanEle = (
       <span
         style={{ textDecoration: completed ? "line-through" : "none" }}
@@ -25,35 +26,68 @@ class TodoItem extends React.Component {
         defaultValue={text}
         onBlur={this.blurHandler}
         onKeyDown={this.enterHandler}
-        style={{ maxWidth: '200px'}}
+        style={{ maxWidth: '200px' }}
       />
     );
 
     return (
       <div style={{ marginTop: "10px", marginLeft: "20px" }}>
-        <Checkbox 
+        <Checkbox
           style={{ margin: "5px" }}
           checked={completed}
-          onChange={onToggleTodo}
+          onChange={this.toggleHandler}
         />
         {this.state.isEditable ? inputEle : spanEle}
         <Button
           style={{ marginLeft: "5px" }}
-          onClick={onDeleteTodo}
+          onClick={this.deleteHandler}
         >
           删除
         </Button>
       </div>
     );
   }
+  deleteHandler = () => {
+    const { onDeleteTodo, id } = this.props;
+    Api.deleteTodo({ id })
+      .then((res) => {
+        console.log('deleteTodo res', res)
+        onDeleteTodo()
+        this.setState({ text: "" });
+      })
+      .catch(err => {
+        console.error(err)
+      })
 
+  }
+  toggleHandler = () => {
+    const { onToggleTodo, id, completed } = this.props;
+    Api.toggleTodo({ id, completed: !completed })
+      .then((res) => {
+        console.log('toggleTodo res', res)
+        onToggleTodo()
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }
+  modifyHandler = (text) => {
+    const { onModifyTodo, id } = this.props;
+    Api.modifyTodo({ id, title: text })
+      .then((res) => {
+        console.log('modifyTodo res', res)
+        onModifyTodo(id, text)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  }
   enterHandler = (e) => {
-    const { id, onModifyTodo } = this.props;
     if (e.keyCode === 13) {
       this.setState({
         isEditable: false,
       });
-      onModifyTodo(id, e.target.value);
+      this.modifyHandler(e.target.value)
     }
   };
   dbClickHandler = () => {
@@ -68,11 +102,10 @@ class TodoItem extends React.Component {
     );
   };
   blurHandler = (e) => {
-    const { id, onModifyTodo } = this.props;
     this.setState({
       isEditable: false,
     });
-    onModifyTodo(id, e.target.value);
+    this.modifyHandler(e.target.value)
   };
 }
 TodoItem.propTypes = {

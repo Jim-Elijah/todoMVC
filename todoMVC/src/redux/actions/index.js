@@ -1,5 +1,9 @@
-// let nextTodoId = 0
-
+export const setTodoList = (payload) => {
+  return {
+    type: "SET_TODOLIST",
+    payload,
+  };
+};
 export const addTodo = (payload) => {
   return {
     type: "ADD_TODO",

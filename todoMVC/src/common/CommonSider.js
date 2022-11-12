@@ -14,17 +14,34 @@ class CommonSider extends Component {
     }));
     this.state = {
       menus,
-      defaultSelectedKeys: ['/'],
+      selectedKeys: ['/'],
     };
+  }
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { history: { location } } = nextProps;
+    const { pathname } = location
+    const { selectedKeys } = prevState
+    console.log('----', pathname, selectedKeys[0])
+    if (selectedKeys[0] !== pathname) {
+      return {
+        selectedKeys: [pathname]
+      }
+    }
+    return null
   }
   menuClickHandler = ({ key }) => {
     console.log("click", key);
+    this.setState({
+      selectedKeys: [key]
+    })
     this.props.history.push(key)
   };
+
   render() {
-    const { menus, defaultSelectedKeys } = this.state;
+    const { menus, selectedKeys } = this.state;
+    console.log('key', selectedKeys)
     return (
-      <Menu items={menus} theme={"dark"} onClick={this.menuClickHandler} defaultSelectedKeys={defaultSelectedKeys} />
+      <Menu items={menus} theme={"dark"} onClick={this.menuClickHandler} selectedKeys={selectedKeys} />
     );
   }
 }

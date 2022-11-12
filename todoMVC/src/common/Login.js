@@ -1,125 +1,116 @@
 import React from "react";
-import axios from "axios";
+import { Form, Input, Button, message } from 'antd'
+import WithModalHOC from './WithModalHOC'
 import storage from "../utils/storage";
+import Api from '../utils/api'
 import { usernameReg, pswdReg } from "./reg";
 
-class login extends React.Component {
+class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       pswd: "",
+      modalConfig: {
+        title: <div style={{ textAlign: 'center' }}>请登录</div>,
+        closable: false,
+        footer: null,
+        // maskClosable: true,
+      },
     };
   }
   render() {
-    if (this.props.isLogin) {
-      return (
-        <div>
-          <h2>您已经登录！</h2>
-        </div>
-      );
-    }
+    console.log('login render', this.props)
+    const { username, pswd } = this.state
     return (
-      <div>
-        <label htmlFor="username">用户名:</label>
-        <input
-          type="text"
-          value={this.state.username}
-          onChange={this.usernameHandler}
-          id="username"
-        />
-        <br />
-        <label htmlFor="password">密{"   "}码: </label>
-        <input
-          type="password"
-          value={this.state.pswd}
-          onChange={this.pswdHandler}
-          id="password"
-        />{" "}
-        <br />
-        <button onClick={this.submitHandler}>登录</button>
-      </div>
+      <Form
+        name="login"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        initialValues={{ remember: true }}
+        onFinish={this.submitHandler}
+        autoComplete="off"
+        style={{ width: '400px' }}
+      >
+        <Form.Item
+          label="用户名"
+          name="username"
+          rules={[{ required: true, message: '请输入用户名!' }]}
+        >
+          <Input value={username} placeholder='请输入用户名' maxLength={20} onChange={this.changeHandler('username')} />
+        </Form.Item>
+
+        <Form.Item
+          label="密码"
+          name="pswd"
+          rules={[{ required: true, message: '请输入密码!' }]}
+        >
+          <Input.Password value={pswd} placeholder='请输入密码' maxLength={20} onChange={this.changeHandler('pswd')} />
+        </Form.Item>
+
+        {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item> */}
+
+        <Form.Item wrapperCol={{ offset: 8, span: 16 }} >
+          <Button type="primary" htmlType="submit">
+            登录
+          </Button>
+          <span style={{ fontSize: '12px', color: 'blue', marginLeft: '10px', cursor: 'pointer' }} onClick={this.jump2Register}>没有账号?点此注册</span>
+        </Form.Item>
+      </Form>
     );
   }
-  usernameHandler = (e) => {
+  changeHandler = (field) => (e) => {
     this.setState({
-      username: e.target.value,
+      [field]: e.target.value,
     });
-  };
-  pswdHandler = (e) => {
-    this.setState({
-      pswd: e.target.value,
-    });
-  };
+  }
+  jump2Register = () => {
+    this.props.history.push('/register')
+  }
   isValid = () => {
-    let username = this.state.username,
-      pswd = this.state.pswd;
+    const { username, pswd } = this.state
+    console.log('isValid', username, pswd)
     if (!usernameReg.test(username)) {
-      alert("请输入合法的用户名!");
+      message.warning("请输入合法的用户名!");
       return false;
     }
     if (!pswdReg.test(pswd)) {
-      alert("请输入合法的密码!");
+      message.warning("请输入合法的密码!");
       return false;
     }
     return true;
   };
 
-  routeJump = (path) => {
-    console.log("jump");
-    this.props.history.push(path);
-    this.props.history.go();
-  };
-
   submitHandler = () => {
-    console.log("submit");
-    let that = this;
-    console.log("that", that);
     if (!this.isValid()) {
       return;
     }
-    axios({
-      method: "post",
-      url: "login",
-      data: {
-        username: this.state.username,
-        password: this.state.pswd,
-      },
-    })
-      .then(function (response) {
-        console.log("res", response);
-        let data = response.data;
-        // data格式
-        // {
-        //   msg: '登录成功！',
-        //   code: 1,
-        //   data: {
-        //     uid: doc[0].uid,
-        //     username: doc[0].username
-        // }
-        if (data.code === 1) {
-          let user = data.data;
+    const { username, pswd } = this.state
+    Api.login({ username, password: pswd })
+      .then((res) => {
+        console.log('login res', res)
+        if (res.code === 1) {
+          let user = res.data;
           console.log("user", user);
           storage.ls.set("token", user);
-          alert(data.msg + "请查看Todo");
-          // setTimeout(() => {
-          //   that.routeJump('/todo');
-          // }, 2000);
-        } else {
-          alert(data.msg);
+          message.success('登录成功, 请查看待办事项!');
+          this.props.setIsOpen(false)
+          setTimeout(() => {
+            this.props.history.push('/todolist')
+          }, 500)
+        }
+        else {
+          message.warning(res.msg);
         }
       })
-      .catch(function (error) {
-        console.log(error);
-      });
+      .catch(err => {
+        console.error(err)
+      })
   };
-  componentDidMount() {
-    console.log("enter login didMount", this.props);
-    console.log("isLogin", this.props.isLogin);
-  }
-  componentWillUnmount() {
-    console.log("login unmount");
-  }
 }
 
-export default login;
+const withLogin = WithModalHOC(Login);
+
+export default withLogin

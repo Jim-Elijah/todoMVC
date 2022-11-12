@@ -1,5 +1,8 @@
 const todos = (state = [], action) => {
   switch (action.type) {
+    case 'SET_TODOLIST':
+      console.log('SET_TODOLIST', action)
+      return action.payload.map(item => ({ ...item, text: item.title }))
     // 创建一个 todo
     case 'ADD_TODO':
       // 注意，返回不可变数据
@@ -11,13 +14,13 @@ const todos = (state = [], action) => {
           completed: false
         }
       ]
-    case 'DELETE_TODO': 
-      return state.filter(todo => 
+    case 'DELETE_TODO':
+      return state.filter(todo =>
         todo.id !== action.id
       )
     case 'MODIFY_TODO':
-      return state.map(todo => 
-        (todo.id === action.id) ? {...todo, text: action.text} : todo
+      return state.map(todo =>
+        (todo.id === action.id) ? { ...todo, text: action.text } : todo
       )
     // 切换一个 todo 的完成状态
     case 'TOGGLE_TODO':
@@ -27,8 +30,8 @@ const todos = (state = [], action) => {
           ? { ...todo, completed: !todo.completed } // 切换完成状态
           : todo
       )
-    case 'CLEAR_TODO': 
-        return []
+    case 'CLEAR_TODO':
+      return []
     default:
       return state
   }

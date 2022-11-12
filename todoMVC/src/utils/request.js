@@ -1,44 +1,54 @@
 import axios from "axios";
 import { message } from "antd";
-import storage from "../utils/storage";
-// import router from "@/router";
+import storage from "./storage";
+import bus from './bus.js'
+import { Base64 } from 'js-base64'
 
-const baseURL = "http://192.168.101.188:8889";
+// const baseURL = "http://192.168.56.1:8080";
+const baseURL = 'http://localhost:8080'
+
+let globalHistory
+
+console.log('bus', bus)
+bus.on('interceptorFn', history => {
+  console.log('get', history)
+  globalHistory = history
+})
 
 axios.defaults.baseURL = baseURL;
 axios.interceptors.request.use(
   (config) => {
     let token = storage.ls.get("token");
+    console.log('req token', token, config)
     if (token) {
-      // 引入Base64
-      let Base64 = require("js-base64").Base64;
-      // 获取taken中间过期的taken期限
-      let a = token.indexOf(".");
-      let b = token.lastIndexOf(".");
-      let userInfoDate = token.slice(a + 1, b);
-      let loginData = Base64.decode(userInfoDate);
-      console.log(loginData);
-      // 获取token过期期限
-      let d = loginData.lastIndexOf(":");
-      let e = loginData.lastIndexOf("}");
-      let expiration = loginData.slice(d + 1, e);
-      console.log("expiration", expiration);
-      let newDate = Math.ceil(Date.now() / 1000);
-      console.log("newDate", newDate);
-      // 当前时间大于token过期时间退出登录
-      if (newDate >= expiration) {
+      let info = Base64.decode(token);
+      console.log(info, 'type', typeof info);
+      const { expire } = JSON.parse(info) || {}
+      const ts = new Date().getTime();
+      console.log("expire", expire);
+      console.log("ts", ts);
+      if (expire && ts < expire) { }
+      else {
         message.warning("登录已过期，请重新登录！");
-        // router.replace("/login");
+        console.log('globalHistory', JSON.stringify(globalHistory))
+        // globalHistory.history.push('/login')
+        setTimeout(() => {
+          globalHistory && globalHistory.push('/login')
+        }, 300)
       }
+      config.headers.authorization = token;
+    } else {
+      message.warning("请重新登录！");
+      console.log('请重新登录！')
+      console.log('globalHistory', JSON.stringify(globalHistory))
+      setTimeout(() => {
+        globalHistory && globalHistory.push('/login')
+      }, 300)
     }
-
     config.headers = {
       "Content-Type": "application/json",
       ...config.headers,
     };
-    if (token) {
-      config.headers.Authorization = token;
-    }
     return config;
   },
   (error) => {
@@ -49,27 +59,12 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => {
     console.log("interceptors response", response);
-    if (response.data.Code > 400) {
-      console.log("code>400", response.data.Message);
-    //   router.replace("/login");
-    } else {
-      return response;
-    }
+    return response;
   },
   (error) => {
-    console.log("网络错误");
+    console.log("err", error);
     if (error.response) {
       console.log(error.response);
-      if (error.response.status === 401) {
-        console.log("AAAA", location.href);
-        storage.ls.remove("token");
-        router.replace("/login");
-        return Promise.reject(error);
-      }
-      if (error.response.data) {
-        console.log("网络错误1", error.response.data.message);
-      }
-      console.log("网络错误2", error.response.data.message);
     } else {
       return Promise.reject(error);
     }
@@ -79,7 +74,9 @@ axios.interceptors.response.use(
 export default function request(url, params, type = "get") {
   return new Promise((resolve, reject) => {
     const method = type.toLowerCase();
-    axios[method](url, { params })
+    const arr = ['get', 'delete']
+    const data = arr.includes(method) ? { params } : params
+    axios[method](url, data)
       .then((res) => {
         console.log(`${method} ${url}:`, res);
         resolve(res.data);

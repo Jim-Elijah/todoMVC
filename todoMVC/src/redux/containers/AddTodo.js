@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Input, Button, message } from "antd";
 import { connect } from "react-redux";
-import axios from "axios";
+import Api from '../../utils/api'
 import storage from "../../utils/storage";
 import { addTodo, clearTodo } from "../actions";
 
@@ -35,19 +35,15 @@ class AddTodo extends Component {
       id: Math.random().toString().slice(-5), // id 累加
       completed: false,
     };
-    axios({
-      method: "post",
-      url: "todo",
-      data: { ...listItem, title: trimed },
-    })
-      .then(function (response) {
-        console.log("res", response);
+    Api.addTodo({ ...listItem, title: trimed })
+      .then((res) => {
+        console.log('login res', res)
+        this.props.dispatch(addTodo({ ...listItem, text: trimed }));
+        this.setState({ text: "" });
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-    this.props.dispatch(addTodo({ ...listItem, text: trimed }));
-    this.setState({ text: "" });
+      .catch(err => {
+        console.error(err)
+      })
   };
   clearHandler = () => {
     this.props.dispatch(clearTodo());

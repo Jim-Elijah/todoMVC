@@ -2,12 +2,35 @@ const http = require('http');
 const url = require('url');
 const qs = require('querystring');
 const { User, TodoItem } = require('./model');
+const { encode, decode, } = require('./utils/base64')
 const crypto = require('crypto');
 
 const server = http.createServer((req, res) => {
   const { method, body } = req
-  console.log(req.url, method)
+  console.log("get", req.headers, method)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, token, authorization");
+  res.setHeader("Access-Control-Expose-Headers", "*");
   res.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' });
+
+  const { authorization } = req.headers || {}
+  let token = authorization ? JSON.parse(decode(authorization)) : {}
+  console.log('token', token, typeof token);
+  const { uid, expire } = token
+  const cur = (new Date()).getTime()
+  if (cur >= expire) {
+    res.writeHead(505, { 'Content-Type': 'text/plain;charset=utf-8' });
+    res.end(JSON.stringify(
+      {
+        msg: '',
+        code: 505,
+        data: null
+      }
+    ))
+    console.log('重新登录')
+  }
   if (method.toUpperCase() == 'POST') {
     console.log('enter post')
     let postData = "";
@@ -98,13 +121,14 @@ const server = http.createServer((req, res) => {
           }
           else if (u.password === doc[0].password) {
             console.log('登录成功！');
+            // 8小时内有效
+            const expire = (new Date()).getTime() + 1000 * 60 * 60 * 8
+            const { uid, username } = doc[0] || {}
+            const token = { uid, username, expire }
             let data = JSON.stringify({
               msg: '登录成功！',
               code: 1,
-              data: {
-                uid: doc[0].uid,
-                username: doc[0].username
-              }
+              data: encode(token),
             })
             res.end(data)
             console.log('用户信息，', data)
@@ -125,7 +149,7 @@ const server = http.createServer((req, res) => {
       else if (req.url === '/todo') {
         let item = JSON.parse(postData);
         console.log('add todoItem', item)
-        let todo = new TodoItem(item)
+        let todo = new TodoItem({ ...item, uid })
         todo.save((err1, doc1) => {   //存储数据
           if (err1) {
             console.error('出现故障 ', err1);
@@ -159,7 +183,7 @@ const server = http.createServer((req, res) => {
     console.log('query', JSON.stringify(query))
     // 查询todo
     if (pathname === '/todo') {
-      TodoItem.find(query, (err, doc) => {
+      TodoItem.find({ uid }, (err, doc) => {
         console.log('doc', doc);
         if (err) {
           console.error(err);
@@ -175,6 +199,7 @@ const server = http.createServer((req, res) => {
           let data = []
           doc.forEach(item => {
             data.push({
+              uid: item.uid,
               id: item.id,
               title: item.title,
               completed: item.completed
@@ -216,8 +241,8 @@ const server = http.createServer((req, res) => {
       if (req.url === '/todo') {
         let item = JSON.parse(putData);
         console.log('updateListVal', item)
-        let { uid, id, title } = item
-        TodoItem.updateOne({ 'uid': uid, 'id': id }, { 'title': title }, (err, doc) => {
+        let { id, title } = item
+        TodoItem.updateOne({ 'id': id }, { 'title': title }, (err, doc) => {
           if (err) {
             console.error('updateListVal失败', err)
             res.end(JSON.stringify(
@@ -241,7 +266,7 @@ const server = http.createServer((req, res) => {
         })
       }
       else if (req.url === '/user') {
-           
+
       }
     })
   }
@@ -255,8 +280,8 @@ const server = http.createServer((req, res) => {
       if (req.url === '/todo') {
         let item = JSON.parse(putData);
         console.log('new todoItem', item)
-        let { uid, id, completed } = item
-        TodoItem.updateOne({ 'uid': uid, 'id': id }, { 'completed': completed }, (err, doc) => {
+        let { id, completed } = item
+        TodoItem.updateOne({ 'id': id }, { 'completed': completed }, (err, doc) => {
           if (err) {
             console.error('出现故障！', err)
             res.end(JSON.stringify(
@@ -287,38 +312,34 @@ const server = http.createServer((req, res) => {
   // 删除todoItem
   else if (method.toUpperCase() === 'DELETE') {
     console.log('enter delete')
-    let delData = "";
-    req.on("data", (data) => { delData += data });
-    req.on('end', () => {
-      console.log('delete data', delData)
-      if (req.url === '/todo') {
-        let item = JSON.parse(delData);
-        console.log('delete todoItem', item)
-        let { uid, id } = item
-        TodoItem.deleteOne({ 'uid': uid, 'id': id }, (err, doc) => {
-          if (err) {
-            console.error('出现故障', err)
-            res.end(JSON.stringify(
-              {
-                msg: '出现故障',
-                code: 0,
-                data: []
-              }
-            ))
-          }
-          else {
-            console.log('delete success!')
-            res.end(JSON.stringify(
-              {
-                msg: 'delete success!',
-                code: 1,
-                data: []
-              }
-            ))
-          }
-        })
-      }
-    })
+    let { pathname, query } = url.parse(req.url, true);
+    console.log('path', pathname)
+    console.log('query', JSON.stringify(query))
+    if (pathname === '/todo') {
+      const { id } = query || {}
+      TodoItem.deleteOne({ 'id': id }, (err, doc) => {
+        if (err) {
+          console.error('出现故障', err)
+          res.end(JSON.stringify(
+            {
+              msg: '出现故障',
+              code: 0,
+              data: []
+            }
+          ))
+        }
+        else {
+          console.log('delete success!')
+          res.end(JSON.stringify(
+            {
+              msg: 'delete success!',
+              code: 1,
+              data: []
+            }
+          ))
+        }
+      })
+    }
   }
   else {
     // console.log(typeof(req), req)

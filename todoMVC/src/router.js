@@ -1,7 +1,6 @@
 import Login from './common/Login'
 import Register from './common/Register'
 import Home from './common/Home';
-import Logout from './common/Logout';
 import UserInfo from './common/UserInfo'
 import Todo from './redux'
 // import Todo from './state/storage/LocalStorage'
@@ -45,14 +44,6 @@ const routes = [
         path: '/login',
         component: Login,
         name: '登录',
-        meta: {
-            isMenu: false,
-        },
-    },
-    {
-        path: '/logout',
-        component: Logout,
-        name: '推出登录',
         meta: {
             isMenu: false,
         },
