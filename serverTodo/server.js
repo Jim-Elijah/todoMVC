@@ -340,6 +340,30 @@ const server = http.createServer((req, res) => {
         }
       })
     }
+    if (pathname === '/clear') {
+      TodoItem.remove({ uid }, (err, doc) => {
+        if (err) {
+          console.error('出现故障', err)
+          res.end(JSON.stringify(
+            {
+              msg: '出现故障',
+              code: 0,
+              data: []
+            }
+          ))
+        }
+        else {
+          console.log('clear success!')
+          res.end(JSON.stringify(
+            {
+              msg: 'clear success!',
+              code: 1,
+              data: []
+            }
+          ))
+        }
+      })
+    }
   }
   else {
     // console.log(typeof(req), req)

@@ -33,4 +33,7 @@ export default {
   deleteTodo(param) {
     return request(`/todo`, param, "DELETE");
   },
+  clearTodo(param) {
+    return request(`/clear`, param, "DELETE");
+  },
 };

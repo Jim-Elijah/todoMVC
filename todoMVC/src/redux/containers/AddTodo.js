@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Input, Button, message } from "antd";
+import { Input, Button, message, Popconfirm } from "antd";
 import { connect } from "react-redux";
 import Api from '../../utils/api'
 import storage from "../../utils/storage";
@@ -46,7 +46,20 @@ class AddTodo extends Component {
       })
   };
   clearHandler = () => {
-    this.props.dispatch(clearTodo());
+    console.log('clear', this.props)
+    const { todos } = this.props
+    if (Array.isArray(todos) && !todos.length) {
+      message.warning('已经清空啦！')
+      return
+    }
+    Api.clearTodo()
+      .then((res) => {
+        console.log('clearTodo res', res)
+        this.props.dispatch(clearTodo());
+      })
+      .catch(err => {
+        console.error(err)
+      })
   };
   render() {
     const { text } = this.state;
@@ -68,10 +81,23 @@ class AddTodo extends Component {
         >
           添加
         </Button>
-        <Button onClick={this.clearHandler}>清空缓存</Button>
+        <Popconfirm
+          title="确定要清空吗?"
+          placement="top"
+          onConfirm={this.clearHandler}
+          okText="确定"
+          cancelText="取消"
+        >
+          <Button>清空</Button>
+        </Popconfirm>
       </div>
     );
   }
 }
 
-export default connect()(AddTodo);
+const mapStateToProps = state => {
+  return {
+    todos: state.todos
+  }
+}
+export default connect(mapStateToProps)(AddTodo);

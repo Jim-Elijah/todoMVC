@@ -29,3 +29,14 @@ code {
   background: #fff;
   padding: 10px;
 }
+
+.avatar {
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.avatar:hover {
+  transform: rotate(180deg);
+  transition: all 0.5s linear;
+}
