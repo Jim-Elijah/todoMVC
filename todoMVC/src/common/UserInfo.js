@@ -24,7 +24,8 @@ export default class UserInfo extends Component {
     if (expire && ts < expire) {
       return;
     }
-    message.warning("登录已过期, 请重新登录");
+    console.log('userinfo didmount');
+    message.warning("请重新登录");
     this.props.history.push("/login");
   }
 

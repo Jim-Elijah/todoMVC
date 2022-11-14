@@ -6,7 +6,7 @@ const { encode, decode, } = require('./utils/base64')
 const crypto = require('crypto');
 
 const server = http.createServer((req, res) => {
-  const { method, body } = req
+  const { method } = req
   console.log("get", req.headers, method)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", "true");
