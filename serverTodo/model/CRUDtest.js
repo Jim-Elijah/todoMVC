@@ -15,13 +15,10 @@ addTodo = (item) => {
   })
 }
 
-findTodo = (query) => {
-  console.log('findTodo', query)
-  TodoItem.find(query, (err, doc) => {
-    if (err) {
-      console.error('find失败！', err);
-      return;
-    }
+findTodo = async (query) => {
+  try {
+    console.log('findTodo', query)
+    const doc = await TodoItem.find(query)
     console.log('doc', doc, Array.isArray(doc));
     if (doc.length !== 0) {
       let data = []
@@ -44,7 +41,9 @@ findTodo = (query) => {
       console.log('没有待办事项！')
       // res.end('没有待办事项！ ')
     }
-  })
+  } catch (e) {
+    console.log('err', e)
+  }
 }
 
 toggleTodo = (condition) => {
@@ -69,7 +68,7 @@ updateListVal = (condition) => {
   })
 }
 
-deleteTodo = (condition)=> {
+deleteTodo = (condition) => {
   console.log('deleteTodo', condition)
   let { uid, id } = condition
   TodoItem.remove({ 'uid': uid, 'id': id }, (err, doc) => {
@@ -86,6 +85,6 @@ deleteTodo = (condition)=> {
 // findTodo({ uid: "0767511345" })
 // toggleTodo({ "uid": "0767511345", "id": "84268", completed: true })
 // updateListVal({ "uid": "0767511345", "id": "84268", 'title': 'title'})
-deleteTodo({ "uid": "0767511345", "id": "84278"})
-findTodo({ uid: "0767511345" })
+// deleteTodo({ "uid": "0767511345", "id": "84278"})
+findTodo({ uid: "5005239031" })
 

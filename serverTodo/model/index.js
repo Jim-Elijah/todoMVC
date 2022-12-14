@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 //引入mogoose模块
 const mongoose = require('mongoose')
 require('dotenv').config();

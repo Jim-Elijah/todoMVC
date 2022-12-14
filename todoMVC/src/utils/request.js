@@ -37,13 +37,20 @@ axios.interceptors.request.use(
         }, 300)
       }
       config.headers.authorization = token;
-    } else {
-      message.warning("请重新登录！");
-      console.log('请重新登录！')
-      console.log('globalHistory', JSON.stringify(globalHistory))
-      setTimeout(() => {
-        globalHistory && globalHistory.push('/login')
-      }, 300)
+    }
+    else {
+      const { url } = config || {}
+      const arr = ['/register', '/login']
+      console.log('url', url);
+      if (!arr.includes(url)) {
+        message.warning("请重新登录！");
+        console.log('请重新登录！')
+        console.log('globalHistory', JSON.stringify(globalHistory))
+        setTimeout(() => {
+          globalHistory && globalHistory.push('/login')
+        }, 300)
+      }
+
     }
     config.headers = {
       "Content-Type": "application/json",
