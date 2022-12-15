@@ -1,7 +1,6 @@
 const todos = (state = [], action) => {
   switch (action.type) {
     case 'SET_TODOLIST':
-      console.log('SET_TODOLIST', action)
       return action.payload.map(item => ({ ...item, text: item.title }))
     // 创建一个 todo
     case 'ADD_TODO':

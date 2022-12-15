@@ -21,7 +21,6 @@ class CommonSider extends Component {
     const { history: { location } } = nextProps;
     const { pathname } = location
     const { selectedKeys } = prevState
-    console.log('----', pathname, selectedKeys[0])
     if (selectedKeys[0] !== pathname) {
       return {
         selectedKeys: [pathname]
@@ -30,7 +29,6 @@ class CommonSider extends Component {
     return null
   }
   menuClickHandler = ({ key }) => {
-    console.log("click", key);
     this.setState({
       selectedKeys: [key]
     })
@@ -39,7 +37,6 @@ class CommonSider extends Component {
 
   render() {
     const { menus, selectedKeys } = this.state;
-    console.log('key', selectedKeys)
     return (
       <Menu items={menus} theme={"dark"} onClick={this.menuClickHandler} selectedKeys={selectedKeys} />
     );

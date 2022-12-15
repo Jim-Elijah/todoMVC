@@ -76,14 +76,17 @@ class register extends React.Component {
     const { username, pswd, pswdAgain } = this.state
     console.log('valid', username, pswd, pswdAgain)
     if (!usernameReg.test(username)) {
+      message.destroy()
       message.warning('请输入合法的用户名!')
       return false;
     }
     if (!pswdReg.test(pswd) || !pswdReg.test(pswdAgain)) {
+      message.destroy()
       message.warning('请输入合法的密码!')
       return false;
     }
     if (pswd !== pswdAgain) {
+      message.destroy()
       message.warning('请输入相同的密码!')
       return false;
     }
@@ -98,7 +101,8 @@ class register extends React.Component {
     Api.register({ username, password: pswd })
       .then(res => {
         console.log('register res', res)
-        if (res.code === 1) {
+        if (res.code === 200) {
+          message.destroy()
           message.success('注册成功, 即刻登陆吧!')
           setTimeout(() => {
             this.props.history.push('/login')
@@ -109,7 +113,8 @@ class register extends React.Component {
             pswdAgain: ''
           })
         } else {
-          message.warning(res.msg);
+          message.destroy()
+          message.warning(res.message);
         }
       }).catch(err => {
         console.error(err)

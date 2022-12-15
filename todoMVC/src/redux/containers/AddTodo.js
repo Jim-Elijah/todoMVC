@@ -13,7 +13,6 @@ class AddTodo extends Component {
     };
   }
   changeHandler = (e) => {
-    console.log("e", e.target.value);
     this.setState({ text: e.target.value });
   };
   enterHandler = (e) => {
@@ -25,19 +24,17 @@ class AddTodo extends Component {
     const { text } = this.state;
     const trimed = text.trim();
     if (!trimed) {
+      message.destroy()
       message.warn("内容不能为空!");
       return;
     }
-    const token = storage.ls.get("token") || {};
-    const { uid } = token || {};
     let listItem = {
-      uid,
       id: Math.random().toString().slice(-5), // id 累加
       completed: false,
     };
     Api.addTodo({ ...listItem, title: trimed })
       .then((res) => {
-        console.log('login res', res)
+        console.log('addTodo res', res)
         this.props.dispatch(addTodo({ ...listItem, text: trimed }));
         this.setState({ text: "" });
       })
@@ -46,9 +43,9 @@ class AddTodo extends Component {
       })
   };
   clearHandler = () => {
-    console.log('clear', this.props)
     const { todos } = this.props
     if (Array.isArray(todos) && !todos.length) {
+      message.destroy();
       message.warning('已经清空啦！')
       return
     }
@@ -63,7 +60,6 @@ class AddTodo extends Component {
   };
   render() {
     const { text } = this.state;
-    console.log("addtodo props", this.props);
     return (
       <div>
         <Input

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Checkbox, Input } from "antd";
+import { Button, Checkbox, Input, message } from "antd";
 import Api from '../../utils/api'
 import PropTypes from "prop-types";
 
@@ -49,7 +49,7 @@ class TodoItem extends React.Component {
   }
   deleteHandler = () => {
     const { onDeleteTodo, id } = this.props;
-    Api.deleteTodo({ id })
+    Api.deleteTodo(id)
       .then((res) => {
         console.log('deleteTodo res', res)
         onDeleteTodo()
@@ -62,7 +62,7 @@ class TodoItem extends React.Component {
   }
   toggleHandler = () => {
     const { onToggleTodo, id, completed } = this.props;
-    Api.toggleTodo({ id, completed: !completed })
+    Api.modifyTodo({ id, completed: !completed })
       .then((res) => {
         console.log('toggleTodo res', res)
         onToggleTodo()
@@ -83,11 +83,17 @@ class TodoItem extends React.Component {
       })
   }
   enterHandler = (e) => {
+    const value = e.target.value.trim()
+    if (!value) {
+      message.destroy();
+      message.warning('请输入内容!')
+      return
+    }
     if (e.keyCode === 13) {
       this.setState({
         isEditable: false,
       });
-      this.modifyHandler(e.target.value)
+      this.modifyHandler(value)
     }
   };
   dbClickHandler = () => {
@@ -102,10 +108,17 @@ class TodoItem extends React.Component {
     );
   };
   blurHandler = (e) => {
+    const value = e.target.value.trim()
+    if (!value) {
+      message.destroy();
+      message.warning('请输入内容!')
+      this.inputRef && this.inputRef.select()
+      return
+    }
     this.setState({
       isEditable: false,
     });
-    this.modifyHandler(e.target.value)
+    this.modifyHandler(value)
   };
 }
 TodoItem.propTypes = {

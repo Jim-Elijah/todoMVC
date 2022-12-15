@@ -73,10 +73,12 @@ class Login extends React.Component {
     const { username, pswd } = this.state
     console.log('isValid', username, pswd)
     if (!usernameReg.test(username)) {
+      message.destroy()
       message.warning("请输入合法的用户名!");
       return false;
     }
     if (!pswdReg.test(pswd)) {
+      message.destroy()
       message.warning("请输入合法的密码!");
       return false;
     }
@@ -91,10 +93,11 @@ class Login extends React.Component {
     Api.login({ username, password: pswd })
       .then((res) => {
         console.log('login res', res)
-        if (res.code === 1) {
+        if (res.code === 200) {
           let user = res.data;
           console.log("user", user);
           storage.ls.set("token", user);
+          message.destroy()
           message.success('登录成功, 请查看待办事项!');
           this.props.setIsOpen(false)
           setTimeout(() => {
@@ -102,7 +105,8 @@ class Login extends React.Component {
           }, 500)
         }
         else {
-          message.warning(res.msg);
+          message.destroy()
+          message.warning(res.message);
         }
       })
       .catch(err => {

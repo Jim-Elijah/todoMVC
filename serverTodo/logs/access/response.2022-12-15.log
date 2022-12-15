@@ -1,0 +1,40 @@
+[2022-12-15T18:19:16.249] [INFO] response - {
+  ip: '::1',
+  method: 'OPTIONS',
+  url: '/todo',
+  body: {},
+  user: undefined,
+  costTime: 4,
+  authorization: undefined,
+  response: { status: 200, message: 'OK' }
+}
+[2022-12-15T18:19:16.465] [INFO] response - {
+  ip: '::1',
+  method: 'POST',
+  url: '/todo',
+  body: { id: '55349', completed: false, title: '3232' },
+  user: undefined,
+  costTime: 208,
+  authorization: 'eyJ1aWQiOiI1MTk3NTc0NjA4IiwidXNlcm5hbWUiOiJqaW0xMSIsImV4cGlyZSI6MTY3MTE4MTQxMTYyOH0=',
+  response: { status: 200, message: 'OK' }
+}
+[2022-12-15T18:19:59.617] [INFO] response - {
+  ip: '::1',
+  method: 'OPTIONS',
+  url: '/todo',
+  body: {},
+  user: undefined,
+  costTime: 4,
+  authorization: undefined,
+  response: { status: 200, message: 'OK' }
+}
+[2022-12-15T18:19:59.868] [INFO] response - {
+  ip: '::1',
+  method: 'POST',
+  url: '/todo',
+  body: { id: '25072', completed: false, title: '324' },
+  user: undefined,
+  costTime: 243,
+  authorization: 'eyJ1aWQiOiI1MTk3NTc0NjA4IiwidXNlcm5hbWUiOiJqaW0xMSIsImV4cGlyZSI6MTY3MTE4MTQxMTYyOH0=',
+  response: { status: 200, message: 'OK' }
+}

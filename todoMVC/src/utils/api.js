@@ -1,14 +1,12 @@
+/* eslint-disable import/no-anonymous-default-export */
 import request from "./request.js";
 
 export default {
   login(params) {
-    return request("/login", params, "POST");
+    return request("/user/login", params, "POST");
   },
   register(params) {
-    return request("/register", params, "POST");
-  },
-  logout(param) {
-    return request("/logout", param, "POST");
+    return request("/user/register", params, "POST");
   },
   getUserInfo(id) {
     return request(`/user/${id}`, null, "GET");
@@ -27,13 +25,10 @@ export default {
   modifyTodo(param) {
     return request(`/todo`, param, "PUT");
   },
-  toggleTodo(param) {
-    return request(`/todo`, param, "PATCH");
-  },
-  deleteTodo(param) {
-    return request(`/todo`, param, "DELETE");
+  deleteTodo(id) {
+    return request(`/todo/${id}`, null, "DELETE");
   },
   clearTodo(param) {
-    return request(`/clear`, param, "DELETE");
+    return request(`/todo/clear`, param, "DELETE");
   },
 };
